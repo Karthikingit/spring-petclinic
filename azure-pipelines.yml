@@ -11,7 +11,6 @@ pool:
 
 steps:
 
-- task: JavaToolInstaller@0
 - task: Maven@4
   inputs:
     mavenPomFile: 'pom.xml'
