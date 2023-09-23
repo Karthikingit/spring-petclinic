@@ -14,6 +14,14 @@ steps:
 - script: 'pip install wget'
   displayName: 'Installing pip'
 - script: 'sudo mkdir -p /builds/binaries/externals'
+- task: JavaToolInstaller@0
+  inputs:
+    versionSpec: '11'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'LocalDirectory'
+    jdkFile: './jdk-17.0.8_linux-aarch64_bin.tar.gz'
+    jdkDestinationDirectory: '/builds/binaries/externals'
+    cleanDestinationDirectory: true
 
 - task: PythonScript@0
   displayName: 'Run a Python script'
