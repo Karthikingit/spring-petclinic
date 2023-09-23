@@ -11,7 +11,13 @@ pool:
 
 steps:
 
-- task: Bash@3
+- task: Maven@4
   inputs:
-    targetType: 'inline'
-    script: './mvnw'
+    mavenPomFile: 'pom.xml'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    javaHomeOption: 'JDKVersion'
+    mavenVersionOption: 'Default'
+    mavenAuthenticateFeed: false
+    effectivePomSkip: false
+    sonarQubeRunAnalysis: false
