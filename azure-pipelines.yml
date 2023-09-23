@@ -12,9 +12,9 @@ pool:
 
 steps:
 - script: 'pip install wget'
-  displayName: 'Command Line Script'
+  displayName: 'Installing pip'
 - script: 'mkdir /builds/'
-  displayName: 'Command Line Script'
+  displayName: 'Create Directory'
 
 - task: PythonScript@0
   displayName: 'Run a Python script'
