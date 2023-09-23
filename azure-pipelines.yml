@@ -13,8 +13,6 @@ pool:
 steps:
 - script: 'pip install wget'
   displayName: 'Installing pip'
-- script: 'mkdir /builds/'
-  displayName: 'Create Directory'
 
 - task: PythonScript@0
   displayName: 'Run a Python script'
@@ -26,7 +24,7 @@ steps:
      print('Beginning file download with wget module')
      
      url = 'https://download.oracle.com/java/17/archive/jdk-17.0.8_linux-aarch64_bin.tar.gz'
-     path = r"/builds/"
+     path = r"./"
      wget.download(url, path)
 
 - task: JavaToolInstaller@0
@@ -34,7 +32,7 @@ steps:
     versionSpec: '11'
     jdkArchitectureOption: 'x64'
     jdkSourceOption: 'LocalDirectory'
-    jdkFile: '/builds/jdk-17.0.8_linux-aarch64_bin.tar.gz'
+    jdkFile: './jdk-17.0.8_linux-aarch64_bin.tar.gz'
     jdkDestinationDirectory: '/builds/binaries/externals'
     cleanDestinationDirectory: true
 - task: Maven@4
