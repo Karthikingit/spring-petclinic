@@ -10,16 +10,8 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- task: Maven@3
+
+- task: Bash@3
   inputs:
-    mavenPomFile: 'pom.xml'
-    goals: 'mvnw'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.8'
-    mavenVersionOption: 'Default'
-    mavenOptions: '-Xmx3072m'
-    mavenAuthenticateFeed: false
-    effectivePomSkip: false
-    sonarQubeRunAnalysis: false
+    targetType: 'inline'
+    script: './mvnw'
