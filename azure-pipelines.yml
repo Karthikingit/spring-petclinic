@@ -7,15 +7,34 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: ubuntu-20.04
+
 
 steps:
+- script: 'pip install wget'
+  displayName: 'Command Line Script'
+
+- task: PythonScript@0
+  displayName: 'Run a Python script'
+  inputs:
+    scriptSource: inline
+    script: |
+     import wget
+     
+     print('Beginning file download with wget module')
+     
+     url = 'https://download.oracle.com/java/17/archive/jdk-17.0.8_linux-aarch64_bin.tar.gz'
+     path = r"/builds/"
+     wget.download(url, path)
 
 - task: JavaToolInstaller@0
   inputs:
-    versionSpec: '17'
-    jdkArchitectureOption: 'x86'
-    jdkSourceOption: 'PreInstalled'
+    versionSpec: '11'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'LocalDirectory'
+    jdkFile: '/builds/jdk-17.0.8_linux-aarch64_bin.tar.gz'
+    jdkDestinationDirectory: '/builds/binaries/externals'
+    cleanDestinationDirectory: true
 - task: Maven@4
   inputs:
     mavenPomFile: 'pom.xml'
