@@ -13,6 +13,7 @@ pool:
 steps:
 - script: 'pip install wget'
   displayName: 'Installing pip'
+- script: 'sudo mkdir -p /builds/binaries/externals'
 
 - task: PythonScript@0
   displayName: 'Run a Python script'
