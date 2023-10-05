@@ -23,7 +23,7 @@ steps:
     jdkArchitectureOption: 'x64'
     jdkSourceOption: 'LocalDirectory'
     jdkFile: '/builds/jdk-17.0.8_linux-aarch64_bin.tar.gz'
-    jdkDestinationDirectory: '/builds'
+    jdkDestinationDirectory: '.'
     cleanDestinationDirectory: true
 
 - task: Maven@4
