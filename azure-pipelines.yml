@@ -12,18 +12,10 @@ pool:
 
 steps:
 
-- task: PythonScript@0
-  displayName: 'Run a Python script'
+- task: Bash@3
   inputs:
-    scriptSource: inline
-    script: |
-     import wget
-     
-     print('Beginning file download with wget module')
-     
-     url = 'https://download.oracle.com/java/17/archive/jdk-17.0.8_linux-aarch64_bin.tar.gz'
-     path = r"./"
-     wget.download(url, path)
+    targetType: 'inline'
+    script: 'sudo apt install wget'
 
 - task: JavaToolInstaller@0
   inputs:
