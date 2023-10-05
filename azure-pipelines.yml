@@ -8,24 +8,9 @@ trigger:
 
 pool:
   vmImage: ubuntu-20.04
-
+container: maven:3.8.1-openjdk-17-slim
 
 steps:
-
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: 'sudo apt install wget && sudo mkdir /builds && sudo wget -P /builds https://download.oracle.com/java/17/archive/jdk-17.0.8_linux-aarch64_bin.tar.gz && ls && pwd'
-
-- task: JavaToolInstaller@0
-  inputs:
-    versionSpec: '17'
-    jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'LocalDirectory'
-    jdkFile: '/builds/jdk-17.0.8_linux-aarch64_bin.tar.gz'
-    jdkDestinationDirectory: '.'
-    cleanDestinationDirectory: true
-
 - task: Maven@3
   inputs:
     mavenPomFile: './pom.xml'
