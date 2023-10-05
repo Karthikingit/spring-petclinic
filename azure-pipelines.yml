@@ -26,7 +26,7 @@ steps:
     jdkDestinationDirectory: '.'
     cleanDestinationDirectory: true
 
-- task: Maven@4
+- task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
     publishJUnitResults: true
@@ -36,7 +36,6 @@ steps:
     mavenAuthenticateFeed: false
     effectivePomSkip: false
     sonarQubeRunAnalysis: false
-
 - task: CopyFiles@2
   inputs:
     Contents: '/target/*.jar'
