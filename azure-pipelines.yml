@@ -15,7 +15,7 @@ steps:
 - task: Bash@3
   inputs:
     targetType: 'inline'
-    script: 'sudo apt install wget && sudo mkdir -p /builds/binaries/externals'
+    script: 'sudo apt install wget && wget https://download.oracle.com/java/17/archive/jdk-17.0.8_linux-aarch64_bin.tar.gz && ls'
 
 - task: JavaToolInstaller@0
   inputs:
@@ -24,7 +24,7 @@ steps:
     jdkSourceOption: 'LocalDirectory'
     jdkFile: './jdk-17.0.8_linux-aarch64_bin.tar.gz'
     jdkDestinationDirectory: '.'
-    cleanDestinationDirectory: true
+    cleanDestinationDirectory: false
 
 - task: Maven@4
   inputs:
