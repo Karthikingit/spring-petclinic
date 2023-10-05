@@ -15,7 +15,7 @@ steps:
 - task: Bash@3
   inputs:
     targetType: 'inline'
-    script: 'sudo apt install wget'
+    script: 'sudo apt install wget && sudo mkdir /builds/binaries/externals'
 
 - task: JavaToolInstaller@0
   inputs:
