@@ -32,7 +32,6 @@ steps:
     targetType: 'inline'
     script: 'apt-get -y install zip'
 
-- task: zip
 - task: ArchiveFiles@2
   displayName: 'Archive files'
   inputs:
