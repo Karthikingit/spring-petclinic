@@ -26,14 +26,17 @@ steps:
   inputs:
     targetType: 'inline'
     script: 'ls && pwd && ls'
-- task: CopyFiles@2
+- task: ArchiveFiles@2
+  displayName: 'Archive files'
   inputs:
-    SourceFolder: '$(agent.builddirectory)'
-    Contents: '/target/*.jar.*'
-    TargetFolder: '$(build.artifactstagingdirectory)'
+    rootFolderOrFile: 'target'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).jar'
+    replaceExistingArchive: true
     
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).jar'
     ArtifactName: 'drop'
     publishLocation: 'Container'
