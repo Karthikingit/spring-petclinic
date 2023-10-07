@@ -27,22 +27,14 @@ steps:
     targetType: 'inline'
     script: 'ls && pwd && ls'
 
-- task: Bash@3
+- task: CopyFiles@2
   inputs:
-    targetType: 'inline'
-    script: 'sudo apt -y install zip'
-
-- task: ArchiveFiles@2
-  displayName: 'Archive files'
-  inputs:
-    rootFolderOrFile: 'target'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).jar'
-    replaceExistingArchive: true
+    SourceFolder: '$(agent.builddirectory)'
+    Contents: 'target/*'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
     
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).jar'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
     ArtifactName: 'drop'
     publishLocation: 'Container'
