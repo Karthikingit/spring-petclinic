@@ -29,7 +29,7 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '/__w/1/s/taarget/'
+    SourceFolder: '/__w/1/s/target/'
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
     
