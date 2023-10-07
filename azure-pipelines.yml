@@ -29,8 +29,8 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(agent.builddirectory)'
-    Contents: 'target/*'
+    SourceFolder: '/__w/1/s/taarget/'
+    Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
     
 - task: PublishBuildArtifacts@1
