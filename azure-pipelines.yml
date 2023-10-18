@@ -48,6 +48,13 @@ jobs:
       effectivePomSkip: false
       codeCoverageToolOption: JaCoCo
       sonarQubeRunAnalysis: false 
+  - task: PublishCodeCoverageResults@1
+    displayName: 'Publish code coverage'
+    inputs:
+      codeCoverageTool: 'JaCoCo'
+      summaryFileLocation: '/__w/1/s/target/site/jacoco/jacoco.xml'
+      pathToSources: '/__w/1/s/src/main/java'
+      additionalCodeCoverageFiles: '/__w/1/s/target/jacoco.exec'
   
   - task: CopyFiles@2
     inputs:
