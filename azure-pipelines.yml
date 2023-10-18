@@ -40,7 +40,6 @@ jobs:
       mavenPomFile: './pom.xml'
       goals: 'package -Dmaven.test.skip=true'
       publishJUnitResults: true
-      testResultsFiles: '**/surefire-reports/TEST-*.xml'
       javaHomeOption: 'JDKVersion'
       mavenVersionOption: 'Default'
       mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
@@ -48,22 +47,24 @@ jobs:
       effectivePomSkip: false
       codeCoverageToolOption: JaCoCo
       sonarQubeRunAnalysis: false 
-  - task: PublishCodeCoverageResults@1
-    displayName: 'Publish code coverage'
-    inputs:
-      codeCoverageTool: 'JaCoCo'
-      summaryFileLocation: '/__w/1/s/target/site/jacoco/jacoco.xml'
-      pathToSources: '/__w/1/s/src/main/java'
-      additionalCodeCoverageFiles: '/__w/1/s/target/jacoco.exec'
   
   - task: CopyFiles@2
     inputs:
       SourceFolder: '/__w/1/s/target/'
       Contents: '**'
       TargetFolder: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
+  - task: PublishCodeCoverageResults@1
+    displayName: 'Publish code coverage'
+    inputs:
+      codeCoverageTool: 'JaCoCo'
+      summaryFileLocation: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/site/jacoco/jacoco.xml'
+      pathToSources: '/__w/1/s/src/main/java'
+      additionalCodeCoverageFiles: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/jacoco.exec'
       
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
       ArtifactName: 'drop'
       publishLocation: 'Container'
+  
+  
