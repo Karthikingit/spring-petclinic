@@ -15,9 +15,39 @@ jobs:
 #    inputs:
 #      cwd: '$(System.DefaultWorkingDirectory)'
 #      projectName: 'PetClinic'
-
-- job: Build
+- job: Test
 #  dependsOn: SAST
+#  condition: succeeded()
+  pool:
+    vmImage: ubuntu-latest
+  variables:
+    MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+    MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+  container: maven:3.8.1-openjdk-17-slim
+  steps:
+  - task: Cache@2
+    inputs:
+      key: 'maven | "$(Agent.OS)" | **/pom.xml'
+      path: '$(MAVEN_CACHE_FOLDER)'
+      restoreKeys: |
+        maven | "$(Agent.OS)"
+        maven
+    displayName: Cache Maven local repo
+
+  - task: Maven@3
+    inputs:
+      mavenPomFile: './pom.xml'
+      goals: 'test'
+      publishJUnitResults: true
+      javaHomeOption: 'JDKVersion'
+      mavenVersionOption: 'Default'
+      mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
+      mavenAuthenticateFeed: false
+      effectivePomSkip: false
+      codeCoverageToolOption: JaCoCo
+      sonarQubeRunAnalysis: false 
+- job: Build
+#  dependsOn: Test
 #  condition: succeeded()
   pool:
     vmImage: ubuntu-latest
