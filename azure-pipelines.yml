@@ -7,17 +7,16 @@ trigger:
 - main
 
 jobs:
-#- job: SAST
-#  pool:
-#    vmImage: ubuntu-latest
-#  steps:
-#  - task: WhiteSource@21
-#    inputs:
-#      cwd: '$(System.DefaultWorkingDirectory)'
-#      projectName: 'PetClinic'
+- job: SAST
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - task: WhiteSource@21
+    inputs:
+      cwd: '$(System.DefaultWorkingDirectory)'
+      projectName: 'PetClinic'
 - job: Test
-#  dependsOn: SAST
-#  condition: succeeded()
+  dependsOn: SAST
   pool:
     vmImage: ubuntu-latest
   variables:
@@ -47,8 +46,8 @@ jobs:
       codeCoverageToolOption: JaCoCo
       sonarQubeRunAnalysis: false 
 - job: Build
-#  dependsOn: Test
-#  condition: succeeded()
+  dependsOn: Test
+  condition: failed()
   pool:
     vmImage: ubuntu-latest
   variables:
