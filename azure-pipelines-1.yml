@@ -15,5 +15,4 @@ jobs:
   - task: CmdLine@2
     inputs:
       script: |
-        docker run -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py \
-            -t https://www.netflix.com/in/ -g gen.conf -r netflixtestreport.html
+        docker run -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t https://www.example.com
