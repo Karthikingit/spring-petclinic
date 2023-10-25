@@ -15,4 +15,5 @@ jobs:
   - task: CmdLine@2
     inputs:
       script: |
-        docker run -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t https://www.example.com
+        docker run -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+    -t https://www.example.com -g gen.conf -r testreport.html
