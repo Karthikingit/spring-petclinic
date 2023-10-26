@@ -22,7 +22,7 @@ jobs:
   variables:
     MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
     MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
-  container: maven:3.8.1-openjdk-17-slim
+  container: maven:3.8.2-eclipse-temurin-17
   steps:
   - task: Cache@2
     inputs:
@@ -44,7 +44,7 @@ jobs:
       mavenAuthenticateFeed: false
       effectivePomSkip: false
       codeCoverageToolOption: JaCoCo
-      sonarQubeRunAnalysis: false 
+      sonarQubeRunAnalysis: false
 - job: Build
   dependsOn: Test
   condition: failed()
@@ -75,8 +75,8 @@ jobs:
       mavenAuthenticateFeed: false
       effectivePomSkip: false
       codeCoverageToolOption: JaCoCo
-      sonarQubeRunAnalysis: false 
-  
+      sonarQubeRunAnalysis: false
+
   - task: CopyFiles@2
     inputs:
       SourceFolder: '/__w/1/s/target/'
@@ -89,11 +89,11 @@ jobs:
       summaryFileLocation: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/site/jacoco/jacoco.xml'
       pathToSources: '/__w/1/s/src/main/java'
       additionalCodeCoverageFiles: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/jacoco.exec'
-      
+
   - task: PublishBuildArtifacts@1
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
       ArtifactName: 'drop'
       publishLocation: 'Container'
-  
-  
+
+
