@@ -47,7 +47,7 @@ jobs:
       sonarQubeRunAnalysis: false
 - job: Build
   dependsOn: Test
-  condition: failed()
+  condition: succeededOrFailed()
   pool:
     vmImage: ubuntu-latest
   variables:
