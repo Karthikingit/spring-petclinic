@@ -1,99 +1,99 @@
-# Maven
-# Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+# # Maven
+# # Build your Java project and run tests with Apache Maven.
+# # Add steps that analyze code, save build artifacts, deploy, and more:
+# # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
-trigger:
-- main
+# trigger:
+# - main
 
-jobs:
-- job: SAST
-  pool:
-    vmImage: ubuntu-latest
-  steps:
-  - task: WhiteSource@21
-    inputs:
-      cwd: '$(System.DefaultWorkingDirectory)'
-      projectName: 'PetClinic'
-- job: Test
-  dependsOn: SAST
-  pool:
-    vmImage: ubuntu-latest
-  variables:
-    MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-    MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
-  container: maven:3.8.2-eclipse-temurin-17
-  steps:
-  - task: Cache@2
-    inputs:
-      key: 'maven | "$(Agent.OS)" | **/pom.xml'
-      path: '$(MAVEN_CACHE_FOLDER)'
-      restoreKeys: |
-        maven | "$(Agent.OS)"
-        maven
-    displayName: Cache Maven local repo
+# jobs:
+# - job: SAST
+#   pool:
+#     vmImage: ubuntu-latest
+#   steps:
+#   - task: WhiteSource@21
+#     inputs:
+#       cwd: '$(System.DefaultWorkingDirectory)'
+#       projectName: 'PetClinic'
+# - job: Test
+#   dependsOn: SAST
+#   pool:
+#     vmImage: ubuntu-latest
+#   variables:
+#     MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+#     MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+#   container: maven:3.8.2-eclipse-temurin-17
+#   steps:
+#   - task: Cache@2
+#     inputs:
+#       key: 'maven | "$(Agent.OS)" | **/pom.xml'
+#       path: '$(MAVEN_CACHE_FOLDER)'
+#       restoreKeys: |
+#         maven | "$(Agent.OS)"
+#         maven
+#     displayName: Cache Maven local repo
 
-  - task: Maven@3
-    inputs:
-      mavenPomFile: './pom.xml'
-      goals: 'test'
-      publishJUnitResults: true
-      javaHomeOption: 'JDKVersion'
-      mavenVersionOption: 'Default'
-      mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
-      mavenAuthenticateFeed: false
-      effectivePomSkip: false
-      codeCoverageToolOption: JaCoCo
-      sonarQubeRunAnalysis: false
-- job: Build
-  dependsOn: Test
-  condition: succeededOrFailed()
-  pool:
-    vmImage: ubuntu-latest
-  variables:
-    MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-    MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
-  container: maven:3.8.1-openjdk-17-slim
-  steps:
-  - task: Cache@2
-    inputs:
-      key: 'maven | "$(Agent.OS)" | **/pom.xml'
-      path: '$(MAVEN_CACHE_FOLDER)'
-      restoreKeys: |
-        maven | "$(Agent.OS)"
-        maven
-    displayName: Cache Maven local repo
+#   - task: Maven@3
+#     inputs:
+#       mavenPomFile: './pom.xml'
+#       goals: 'test'
+#       publishJUnitResults: true
+#       javaHomeOption: 'JDKVersion'
+#       mavenVersionOption: 'Default'
+#       mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
+#       mavenAuthenticateFeed: false
+#       effectivePomSkip: false
+#       codeCoverageToolOption: JaCoCo
+#       sonarQubeRunAnalysis: false
+# - job: Build
+#   dependsOn: Test
+#   condition: succeededOrFailed()
+#   pool:
+#     vmImage: ubuntu-latest
+#   variables:
+#     MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+#     MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+#   container: maven:3.8.1-openjdk-17-slim
+#   steps:
+#   - task: Cache@2
+#     inputs:
+#       key: 'maven | "$(Agent.OS)" | **/pom.xml'
+#       path: '$(MAVEN_CACHE_FOLDER)'
+#       restoreKeys: |
+#         maven | "$(Agent.OS)"
+#         maven
+#     displayName: Cache Maven local repo
 
-  - task: Maven@3
-    inputs:
-      mavenPomFile: './pom.xml'
-      goals: 'package -Dmaven.test.skip=true'
-      publishJUnitResults: true
-      javaHomeOption: 'JDKVersion'
-      mavenVersionOption: 'Default'
-      mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
-      mavenAuthenticateFeed: false
-      effectivePomSkip: false
-      codeCoverageToolOption: JaCoCo
-      sonarQubeRunAnalysis: false
+#   - task: Maven@3
+#     inputs:
+#       mavenPomFile: './pom.xml'
+#       goals: 'package -Dmaven.test.skip=true'
+#       publishJUnitResults: true
+#       javaHomeOption: 'JDKVersion'
+#       mavenVersionOption: 'Default'
+#       mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
+#       mavenAuthenticateFeed: false
+#       effectivePomSkip: false
+#       codeCoverageToolOption: JaCoCo
+#       sonarQubeRunAnalysis: false
 
-  - task: CopyFiles@2
-    inputs:
-      SourceFolder: '/__w/1/s/target/'
-      Contents: '**'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
-  - task: PublishCodeCoverageResults@1
-    displayName: 'Publish code coverage'
-    inputs:
-      codeCoverageTool: 'JaCoCo'
-      summaryFileLocation: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/site/jacoco/jacoco.xml'
-      pathToSources: '/__w/1/s/src/main/java'
-      additionalCodeCoverageFiles: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/jacoco.exec'
+#   - task: CopyFiles@2
+#     inputs:
+#       SourceFolder: '/__w/1/s/target/'
+#       Contents: '**'
+#       TargetFolder: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
+#   - task: PublishCodeCoverageResults@1
+#     displayName: 'Publish code coverage'
+#     inputs:
+#       codeCoverageTool: 'JaCoCo'
+#       summaryFileLocation: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/site/jacoco/jacoco.xml'
+#       pathToSources: '/__w/1/s/src/main/java'
+#       additionalCodeCoverageFiles: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/jacoco.exec'
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
-      ArtifactName: 'drop'
-      publishLocation: 'Container'
+#   - task: PublishBuildArtifacts@1
+#     inputs:
+#       PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
+#       ArtifactName: 'drop'
+#       publishLocation: 'Container'
 
 
