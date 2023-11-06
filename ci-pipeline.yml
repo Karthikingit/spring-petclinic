@@ -28,6 +28,7 @@ stages:
 
 - stage: Build
   dependsOn: SAST
+  condition: succeededOrFailed()
   pool:
     vmImage: 'ubuntu-latest'
   jobs:
@@ -192,6 +193,7 @@ stages:
         image: 'usernamedoc/docker-test:$(Build.BuildId)'
   - job: OWASP
     dependsOn: TriveImageScan
+    condition: succeededOrFailed()
     steps:
     - task: Docker@2
       inputs:
