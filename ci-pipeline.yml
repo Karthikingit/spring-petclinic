@@ -12,7 +12,7 @@ stages:
   pool:
     vmImage: 'ubuntu-latest'
   jobs:
-  - job: Whitesource MEND
+  - job: WhitesourceMEND
     steps:
     - task: WhiteSource@21
       inputs:
@@ -140,40 +140,42 @@ stages:
   variables:
     MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
     MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
-  steps:
-  - task: JavaToolInstaller@0
-    inputs:
-      versionSpec: '17'
-      jdkArchitectureOption: 'x64'
-      jdkSourceOption: 'PreInstalled'
-  - task: Cache@2
-    inputs:
-      key: 'maven | "$(Agent.OS)" | **/pom.xml'
-      path: '$(MAVEN_CACHE_FOLDER)'
-      restoreKeys: |
-        maven | "$(Agent.OS)"
-        maven
-    displayName: Cache Maven local repo
-  - task: Maven@4
-    inputs:
-      mavenPomFile: './pom.xml'
-      goals: 'test'
-      publishJUnitResults: true
-      javaHomeOption: 'JDKVersion'
-      mavenVersionOption: 'Default'
-      mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
-      mavenAuthenticateFeed: false
-      effectivePomSkip: false
-      codeCoverageToolOption: JaCoCo
-      sonarQubeRunAnalysis: false
-  - task: PublishCodeCoverageResults@1
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-    displayName: 'Publish code coverage'
-    inputs:
-      codeCoverageTool: 'JaCoCo'
-      summaryFileLocation: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/site/jacoco/jacoco.xml'
-      pathToSources: '/home/vsts/work/1/s/src/main/java'
-      additionalCodeCoverageFiles: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/jacoco.exec'
+  jobs:
+  - job: Test
+    steps:
+    - task: JavaToolInstaller@0
+      inputs:
+        versionSpec: '17'
+        jdkArchitectureOption: 'x64'
+        jdkSourceOption: 'PreInstalled'
+    - task: Cache@2
+      inputs:
+        key: 'maven | "$(Agent.OS)" | **/pom.xml'
+        path: '$(MAVEN_CACHE_FOLDER)'
+        restoreKeys: |
+          maven | "$(Agent.OS)"
+          maven
+      displayName: Cache Maven local repo
+    - task: Maven@4
+      inputs:
+        mavenPomFile: './pom.xml'
+        goals: 'test'
+        publishJUnitResults: true
+        javaHomeOption: 'JDKVersion'
+        mavenVersionOption: 'Default'
+        mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
+        mavenAuthenticateFeed: false
+        effectivePomSkip: false
+        codeCoverageToolOption: JaCoCo
+        sonarQubeRunAnalysis: false
+    - task: PublishCodeCoverageResults@1
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+      displayName: 'Publish code coverage'
+      inputs:
+        codeCoverageTool: 'JaCoCo'
+        summaryFileLocation: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/site/jacoco/jacoco.xml'
+        pathToSources: '/home/vsts/work/1/s/src/main/java'
+        additionalCodeCoverageFiles: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/jacoco.exec'
 
 - stage: 'DAST'
   dependsOn: Test
