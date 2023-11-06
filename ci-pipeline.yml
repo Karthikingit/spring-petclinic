@@ -194,7 +194,6 @@ stages:
         loginDockerConfig: true
         image: 'usernamedoc/docker-test:$(Build.BuildId)'
   - job: OWASP
-    variables: 
     dependsOn: TriveImageScan
     condition: succeededOrFailed()
     steps:
