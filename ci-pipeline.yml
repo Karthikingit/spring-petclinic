@@ -134,7 +134,8 @@ stages:
       inputs:
         containerRegistry: 'dockerhub'
         repository: 'docker-test'
-        command: 'push'
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
 
 - stage: Test
   dependsOn: Build
