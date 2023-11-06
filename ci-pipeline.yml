@@ -12,12 +12,12 @@ stages:
   pool:
     vmImage: 'ubuntu-latest'
   jobs:
-  # - job: WhitesourceMEND
-  #   steps:
-  #   - task: WhiteSource@21
-  #     inputs:
-  #       cwd: '$(System.DefaultWorkingDirectory)'
-  #       projectName: 'PetClinic'
+  - job: WhitesourceMEND
+    steps:
+    - task: WhiteSource@21
+      inputs:
+        cwd: '$(System.DefaultWorkingDirectory)'
+        projectName: 'PetClinic'
   - job: TrivyFS
     steps:
     - task: trivy@1
