@@ -74,6 +74,7 @@ stages:
         publishLocation: 'Container'
 
   - job: BuildInsideContainer
+    dependsOn: MavenBuild
     variables:
       MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
       MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
@@ -113,6 +114,7 @@ stages:
         publishLocation: 'Container'
 
   - job: DockerImageBuildAndPush
+    dependsOn: BuildInsideContainer
     steps:
     - task: DownloadBuildArtifacts@1
       inputs:
@@ -192,6 +194,7 @@ stages:
         loginDockerConfig: true
         image: 'usernamedoc/docker-test:$(Build.BuildId)'
   - job: OWASP
+    variables: 
     dependsOn: TriveImageScan
     condition: succeededOrFailed()
     steps:
