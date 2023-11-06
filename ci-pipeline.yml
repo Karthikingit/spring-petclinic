@@ -173,7 +173,7 @@ stages:
         codeCoverageToolOption: JaCoCo
         sonarQubeRunAnalysis: false
     - task: PublishCodeCoverageResults@1
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+      condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
       displayName: 'Publish code coverage'
       inputs:
         codeCoverageTool: 'JaCoCo'
