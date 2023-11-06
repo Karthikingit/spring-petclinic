@@ -138,6 +138,7 @@ stages:
 
 - stage: Test
   dependsOn: Build
+  condition: succeededOrFailed()
   pool:
     vmImage: 'ubuntu-latest'
   variables:
