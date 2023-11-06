@@ -121,7 +121,7 @@ stages:
         buildType: 'current'
         downloadType: 'single'
         artifactName: 'MavenBuildArtifacts'
-        itemPattern: 'BuildArtifacts/spring-petclinic-3.1.0-SNAPSHOT.jar'
+        itemPattern: 'MavenBuildArtifacts/spring-petclinic-3.1.0-SNAPSHOT.jar'
         downloadPath: '/home/vsts/work/1/s/target/'
     - task: Docker@2
       inputs:
