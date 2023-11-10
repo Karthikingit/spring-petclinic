@@ -223,7 +223,7 @@ stages:
         testResultsFormat: 'NUnit'
         testResultsFiles: 'converted_report.xml'
 
-- stage: Update k8s manifests
+- stage: Update_k8s_manifests
   jobs:
   - job: UpdateManifest
     displayName: 'Update Kubernetes Manifest'
