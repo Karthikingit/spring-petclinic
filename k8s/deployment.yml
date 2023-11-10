@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-petclinic
+spec:
+  replicas: 3  # Adjust the number of replicas as needed
+  selector:
+    matchLabels:
+      app: petclinic-web
+  template:
+    metadata:
+      labels:
+        app: petclinic
+    spec:
+      containers:
+      - name: web-container
+        image: usernamedoc/petclinic:latest  # Update with your Docker image
+        ports:
+        - containerPort: 8080  # Adjust the port if needed
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: your-app-service
+spec:
+  selector:
+    app: your-app
+  ports:
+    - protocol: TCP
+      port: 80       # External port on the service
+      targetPort: 8080 # Port on the pod
+  type: NodePort
