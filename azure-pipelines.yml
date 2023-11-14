@@ -230,18 +230,26 @@ stages:
     displayName: 'Update Kubernetes Manifest'
     steps:
     - checkout: self
-      # persistCredentials: true
-      # clean: true
+      persistCredentials: true
+      clean: true
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          sed -i 's|image: usernamedoc/petclinic:.*|image: usernamedoc/petclinic:$(Build.BuildId)|' $(Build.SourcesDirectory)/k8s/deployment.yml
+          git config --global user.email "karthikvenu1502@gmail.com"
+          git config --global user.name "fromazdpipelines"
+          git add $(Build.SourcesDirectory)/k8s/deployment.yml
+          git commit -m "Update Docker image in Kubernetes manifest [skip ci]"
+          git push -u origin HEAD:main/docker
+    # - script: |
+    #     # Replace the image name and tag in the Kubernetes manifest file
+    #     sed -i 's|image: usernamedoc/petclinic:.*|image: usernamedoc/petclinic:$(Build.BuildId)|' $(Build.SourcesDirectory)/k8s/deployment.yml
 
-    - script: |
-        # Replace the image name and tag in the Kubernetes manifest file
-        sed -i 's|image: usernamedoc/petclinic:.*|image: usernamedoc/petclinic:$(Build.BuildId)|' $(Build.SourcesDirectory)/k8s/deployment.yml
-
-        # Commit the changes back to the repository
-        git config --global user.email "karthikvenu1502@gmail.com"
-        git config --global user.name "fromazdpipelines"
-        git add $(Build.SourcesDirectory)/k8s/deployment.yml
-        git commit -m "Update Docker image in Kubernetes manifest [skip ci]"
-        git push -u origin HEAD:main/docker
+    #     # Commit the changes back to the repository
+    #     git config --global user.email "karthikvenu1502@gmail.com"
+    #     git config --global user.name "fromazdpipelines"
+    #     git add $(Build.SourcesDirectory)/k8s/deployment.yml
+    #     git commit -m "Update Docker image in Kubernetes manifest [skip ci]"
 
       displayName: 'Update Manifest and Commit'
