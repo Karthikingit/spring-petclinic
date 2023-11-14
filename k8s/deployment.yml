@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: web-container
-        image: usernamedoc/petclinic:latest  # Update with your Docker image
+        image: usernamedoc/petclinic:322
         ports:
         - containerPort: 8080  # Adjust the port if needed
 ---
