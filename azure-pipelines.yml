@@ -241,7 +241,7 @@ stages:
           git config --global user.name "fromazdpipelines"
           git add $(Build.SourcesDirectory)/k8s/deployment.yml
           git commit -m "Update Docker image in Kubernetes manifest [skip ci]"
-          git push
+          git push origin HEAD:main
     # - script: |
     #     # Replace the image name and tag in the Kubernetes manifest file
     #     sed -i 's|image: usernamedoc/petclinic:.*|image: usernamedoc/petclinic:$(Build.BuildId)|' $(Build.SourcesDirectory)/k8s/deployment.yml
