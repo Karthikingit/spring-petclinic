@@ -8,223 +8,223 @@ trigger:
 - feature/*
 
 stages:
-- stage: SAST
-  pool:
-    vmImage: 'ubuntu-latest'
-  jobs:
-  - job: WhitesourceMEND
-    steps:
-    - task: WhiteSource@21
-      inputs:
-        cwd: '$(System.DefaultWorkingDirectory)'
-        projectName: 'PetClinic'
-  - job: TrivyFS
-    steps:
-    - task: trivy@1
-      inputs:
-        version: 'latest'
-        path: './'
-      displayName: TrivyFS
+# - stage: SAST
+#   pool:
+#     vmImage: 'ubuntu-latest'
+#   jobs:
+#   - job: WhitesourceMEND
+#     steps:
+#     - task: WhiteSource@21
+#       inputs:
+#         cwd: '$(System.DefaultWorkingDirectory)'
+#         projectName: 'PetClinic'
+#   - job: TrivyFS
+#     steps:
+#     - task: trivy@1
+#       inputs:
+#         version: 'latest'
+#         path: './'
+#       displayName: TrivyFS
 
-- stage: Build
-  dependsOn: SAST
-  condition: succeededOrFailed()
-  pool:
-    vmImage: 'ubuntu-latest'
-  jobs:
-  - job: MavenBuild
-    variables:
-      MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-      MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
-    steps:
-    - task: JavaToolInstaller@0
-      inputs:
-        versionSpec: '17'
-        jdkArchitectureOption: 'x64'
-        jdkSourceOption: 'PreInstalled'
-    - task: Cache@2
-      inputs:
-        key: 'maven | "$(Agent.OS)" | **/pom.xml'
-        restoreKeys: |
-          maven | "$(Agent.OS)"
-          maven
-        path: $(MAVEN_CACHE_FOLDER)
-      displayName: Cache Maven local repo
-    - task: Maven@4
-      inputs:
-        mavenPomFile: './pom.xml'
-        goals: 'package -Dmaven.test.skip=true'
-        publishJUnitResults: true
-        javaHomeOption: 'JDKVersion'
-        mavenVersionOption: 'Default'
-        mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
-        mavenAuthenticateFeed: false
-        effectivePomSkip: false
-        codeCoverageToolOption: JaCoCo
-        sonarQubeRunAnalysis: false
-    - task: CopyFiles@2
-      inputs:
-        SourceFolder: '/home/vsts/work/1/s/target/'
-        Contents: '*.jar'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
-        ArtifactName: 'MavenBuildArtifacts'
-        publishLocation: 'Container'
+# - stage: Build
+#   dependsOn: SAST
+#   condition: succeededOrFailed()
+#   pool:
+#     vmImage: 'ubuntu-latest'
+#   jobs:
+#   - job: MavenBuild
+#     variables:
+#       MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+#       MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+#     steps:
+#     - task: JavaToolInstaller@0
+#       inputs:
+#         versionSpec: '17'
+#         jdkArchitectureOption: 'x64'
+#         jdkSourceOption: 'PreInstalled'
+#     - task: Cache@2
+#       inputs:
+#         key: 'maven | "$(Agent.OS)" | **/pom.xml'
+#         restoreKeys: |
+#           maven | "$(Agent.OS)"
+#           maven
+#         path: $(MAVEN_CACHE_FOLDER)
+#       displayName: Cache Maven local repo
+#     - task: Maven@4
+#       inputs:
+#         mavenPomFile: './pom.xml'
+#         goals: 'package -Dmaven.test.skip=true'
+#         publishJUnitResults: true
+#         javaHomeOption: 'JDKVersion'
+#         mavenVersionOption: 'Default'
+#         mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
+#         mavenAuthenticateFeed: false
+#         effectivePomSkip: false
+#         codeCoverageToolOption: JaCoCo
+#         sonarQubeRunAnalysis: false
+#     - task: CopyFiles@2
+#       inputs:
+#         SourceFolder: '/home/vsts/work/1/s/target/'
+#         Contents: '*.jar'
+#         TargetFolder: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
+#     - task: PublishBuildArtifacts@1
+#       inputs:
+#         PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
+#         ArtifactName: 'MavenBuildArtifacts'
+#         publishLocation: 'Container'
 
-  - job: BuildInsideContainer
-    dependsOn: MavenBuild
-    variables:
-      MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-      MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
-    container: maven:3.8.1-openjdk-17-slim
-    steps:
-    - task: Cache@2
-      inputs:
-        key: 'maven | "$(Agent.OS)" | **/pom.xml'
-        path: '$(MAVEN_CACHE_FOLDER)'
-        restoreKeys: |
-          maven | "$(Agent.OS)"
-          maven
-      displayName: Cache Maven local repo
-    - task: Maven@3
-      inputs:
-        mavenPomFile: './pom.xml'
-        goals: 'package -Dmaven.test.skip=true'
-        publishJUnitResults: true
-        javaHomeOption: 'JDKVersion'
-        mavenVersionOption: 'Default'
-        mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
-        mavenAuthenticateFeed: false
-        effectivePomSkip: false
-        codeCoverageToolOption: JaCoCo
-        sonarQubeRunAnalysis: false
-    - task: CopyFiles@2
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-      inputs:
-        SourceFolder: '/__w/1/s/target/'
-        Contents: '**'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
-    - task: PublishBuildArtifacts@1
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
-        ArtifactName: 'ContainerBuildArtifacts'
-        publishLocation: 'Container'
+#   - job: BuildInsideContainer
+#     dependsOn: MavenBuild
+#     variables:
+#       MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+#       MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+#     container: maven:3.8.1-openjdk-17-slim
+#     steps:
+#     - task: Cache@2
+#       inputs:
+#         key: 'maven | "$(Agent.OS)" | **/pom.xml'
+#         path: '$(MAVEN_CACHE_FOLDER)'
+#         restoreKeys: |
+#           maven | "$(Agent.OS)"
+#           maven
+#       displayName: Cache Maven local repo
+#     - task: Maven@3
+#       inputs:
+#         mavenPomFile: './pom.xml'
+#         goals: 'package -Dmaven.test.skip=true'
+#         publishJUnitResults: true
+#         javaHomeOption: 'JDKVersion'
+#         mavenVersionOption: 'Default'
+#         mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
+#         mavenAuthenticateFeed: false
+#         effectivePomSkip: false
+#         codeCoverageToolOption: JaCoCo
+#         sonarQubeRunAnalysis: false
+#     - task: CopyFiles@2
+#       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+#       inputs:
+#         SourceFolder: '/__w/1/s/target/'
+#         Contents: '**'
+#         TargetFolder: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
+#     - task: PublishBuildArtifacts@1
+#       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+#       inputs:
+#         PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)'
+#         ArtifactName: 'ContainerBuildArtifacts'
+#         publishLocation: 'Container'
 
-  - job: DockerImageBuildAndPush
-    dependsOn: BuildInsideContainer
-    steps:
-    - task: DownloadBuildArtifacts@1
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: 'MavenBuildArtifacts'
-        itemPattern: 'MavenBuildArtifacts/spring-petclinic-3.1.0-SNAPSHOT.jar'
-        downloadPath: '/home/vsts/work/1/s/target/'
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'dockerhub'
-        repository: 'usernamedoc/docker-test'
-        command: 'build'
-        Dockerfile: '**/Dockerfile'
-    - task: Docker@2
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-      inputs:
-        containerRegistry: 'dockerhub'
-        repository: 'usernamedoc/docker-test'
-        command: 'push'
+#   - job: DockerImageBuildAndPush
+#     dependsOn: BuildInsideContainer
+#     steps:
+#     - task: DownloadBuildArtifacts@1
+#       inputs:
+#         buildType: 'current'
+#         downloadType: 'single'
+#         artifactName: 'MavenBuildArtifacts'
+#         itemPattern: 'MavenBuildArtifacts/spring-petclinic-3.1.0-SNAPSHOT.jar'
+#         downloadPath: '/home/vsts/work/1/s/target/'
+#     - task: Docker@2
+#       inputs:
+#         containerRegistry: 'dockerhub'
+#         repository: 'usernamedoc/docker-test'
+#         command: 'build'
+#         Dockerfile: '**/Dockerfile'
+#     - task: Docker@2
+#       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+#       inputs:
+#         containerRegistry: 'dockerhub'
+#         repository: 'usernamedoc/docker-test'
+#         command: 'push'
 
-- stage: Test
-  dependsOn: Build
-  condition: succeededOrFailed()
-  pool:
-    vmImage: 'ubuntu-latest'
-  variables:
-    MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-    MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
-  jobs:
-  - job: Test
-    steps:
-    - task: JavaToolInstaller@0
-      inputs:
-        versionSpec: '17'
-        jdkArchitectureOption: 'x64'
-        jdkSourceOption: 'PreInstalled'
-    - task: Cache@2
-      inputs:
-        key: 'maven | "$(Agent.OS)" | **/pom.xml'
-        path: '$(MAVEN_CACHE_FOLDER)'
-        restoreKeys: |
-          maven | "$(Agent.OS)"
-          maven
-      displayName: Cache Maven local repo
-    - task: Maven@4
-      inputs:
-        mavenPomFile: './pom.xml'
-        goals: 'test'
-        publishJUnitResults: true
-        javaHomeOption: 'JDKVersion'
-        mavenVersionOption: 'Default'
-        mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
-        mavenAuthenticateFeed: false
-        effectivePomSkip: false
-        codeCoverageToolOption: JaCoCo
-        sonarQubeRunAnalysis: false
-    - task: PublishCodeCoverageResults@1
-      condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-      displayName: 'Publish code coverage'
-      inputs:
-        codeCoverageTool: 'JaCoCo'
-        summaryFileLocation: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/site/jacoco/jacoco.xml'
-        pathToSources: '/home/vsts/work/1/s/src/main/java'
-        additionalCodeCoverageFiles: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/jacoco.exec'
+# - stage: Test
+#   dependsOn: Build
+#   condition: succeededOrFailed()
+#   pool:
+#     vmImage: 'ubuntu-latest'
+#   variables:
+#     MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+#     MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+#   jobs:
+#   - job: Test
+#     steps:
+#     - task: JavaToolInstaller@0
+#       inputs:
+#         versionSpec: '17'
+#         jdkArchitectureOption: 'x64'
+#         jdkSourceOption: 'PreInstalled'
+#     - task: Cache@2
+#       inputs:
+#         key: 'maven | "$(Agent.OS)" | **/pom.xml'
+#         path: '$(MAVEN_CACHE_FOLDER)'
+#         restoreKeys: |
+#           maven | "$(Agent.OS)"
+#           maven
+#       displayName: Cache Maven local repo
+#     - task: Maven@4
+#       inputs:
+#         mavenPomFile: './pom.xml'
+#         goals: 'test'
+#         publishJUnitResults: true
+#         javaHomeOption: 'JDKVersion'
+#         mavenVersionOption: 'Default'
+#         mavenOptions: '-Xmx3072m $(MAVEN_OPTS)'
+#         mavenAuthenticateFeed: false
+#         effectivePomSkip: false
+#         codeCoverageToolOption: JaCoCo
+#         sonarQubeRunAnalysis: false
+#     - task: PublishCodeCoverageResults@1
+#       condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+#       displayName: 'Publish code coverage'
+#       inputs:
+#         codeCoverageTool: 'JaCoCo'
+#         summaryFileLocation: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/site/jacoco/jacoco.xml'
+#         pathToSources: '/home/vsts/work/1/s/src/main/java'
+#         additionalCodeCoverageFiles: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)/jacoco.exec'
 
-- stage: 'DAST'
-  dependsOn: Test
-  condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-  pool:
-    vmImage: 'ubuntu-latest'
-  jobs:
-  - job: TriveImageScan
-    steps:
-    - task: trivy@1
-      inputs:
-        version: 'latest'
-        loginDockerConfig: true
-        image: 'usernamedoc/docker-test:$(Build.BuildId)'
-  - job: OWASP
-    dependsOn: TriveImageScan
-    condition: succeededOrFailed()
-    steps:
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'dockerhub'
-        command: 'login'
-    - bash: docker run -d -p 8080:8080 $(REPONAME)/$(IMAGENAME):223
-      displayName: 'Dockhub Login'
-    - bash: |
-        chmod -R 777  ./
-        docker run --rm -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t https://www.netflix.com/in/ -x xml_report.xml
-        true
-      displayName: 'Running App Container'
-    - powershell: |
-        $XslPath = "/home/vsts/work/1/s/xml_to_nunit.xslt"
-        $XmlInputPath = "xml_report.xml"
-        $XmlOutputPath = "converted_report.xml"
-        $XslTransform = New-Object System.Xml.Xsl.XslCompiledTransform
-        $XslTransform.Load($XslPath)
-        $XslTransform.Transform($XmlInputPath, $XmlOutputPath)
-      displayName: 'PowerShell Script'
-    - task: PublishTestResults@2
-      displayName: 'Publish Test Results'
-      inputs:
-        testResultsFormat: 'NUnit'
-        testResultsFiles: 'converted_report.xml'
+# - stage: 'DAST'
+#   dependsOn: Test
+#   condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+#   pool:
+#     vmImage: 'ubuntu-latest'
+#   jobs:
+#   - job: TriveImageScan
+#     steps:
+#     - task: trivy@1
+#       inputs:
+#         version: 'latest'
+#         loginDockerConfig: true
+#         image: 'usernamedoc/docker-test:$(Build.BuildId)'
+#   - job: OWASP
+#     dependsOn: TriveImageScan
+#     condition: succeededOrFailed()
+#     steps:
+#     - task: Docker@2
+#       inputs:
+#         containerRegistry: 'dockerhub'
+#         command: 'login'
+#     - bash: docker run -d -p 8080:8080 $(REPONAME)/$(IMAGENAME):223
+#       displayName: 'Dockhub Login'
+#     - bash: |
+#         chmod -R 777  ./
+#         docker run --rm -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t https://www.netflix.com/in/ -x xml_report.xml
+#         true
+#       displayName: 'Running App Container'
+#     - powershell: |
+#         $XslPath = "/home/vsts/work/1/s/xml_to_nunit.xslt"
+#         $XmlInputPath = "xml_report.xml"
+#         $XmlOutputPath = "converted_report.xml"
+#         $XslTransform = New-Object System.Xml.Xsl.XslCompiledTransform
+#         $XslTransform.Load($XslPath)
+#         $XslTransform.Transform($XmlInputPath, $XmlOutputPath)
+#       displayName: 'PowerShell Script'
+#     - task: PublishTestResults@2
+#       displayName: 'Publish Test Results'
+#       inputs:
+#         testResultsFormat: 'NUnit'
+#         testResultsFiles: 'converted_report.xml'
 
 - stage: Update_k8s_manifests
-  condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  # condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   jobs:
   - job: UpdateManifest
     displayName: 'Update Kubernetes Manifest'
