@@ -224,6 +224,7 @@ stages:
         testResultsFiles: 'converted_report.xml'
 
 - stage: Update_k8s_manifests
+  condition: and(succeededOrFailed(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   jobs:
   - job: UpdateManifest
     displayName: 'Update Kubernetes Manifest'
@@ -238,7 +239,7 @@ stages:
 
         # Commit the changes back to the repository
         git config --global user.email "karthikvenu1502@gmail.com"
-        git config --global user.name "Karthik V"
+        git config --global user.name "fromazdpipelines"
         git add $(Build.SourcesDirectory)/k8s/deployment.yml
         git commit -m "Update Docker image in Kubernetes manifest [skip ci]"
         git push -u origin HEAD:main/docker
