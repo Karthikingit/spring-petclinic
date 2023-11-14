@@ -229,9 +229,9 @@ stages:
   - job: UpdateManifest
     displayName: 'Update Kubernetes Manifest'
     steps:
-    # - checkout: self
-    #   persistCredentials: true
-    #   clean: true
+    - checkout: self
+      persistCredentials: true
+      clean: true
 
     - script: |
         # Replace the image name and tag in the Kubernetes manifest file
