@@ -134,7 +134,7 @@ stages:
       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
       inputs:
         containerRegistry: 'dockerhub'
-        repository: 'usernamedoc/docker-test'
+        repository: '$(REPOSITORY)'
         command: 'push'
       displayName: Docker Push
 
