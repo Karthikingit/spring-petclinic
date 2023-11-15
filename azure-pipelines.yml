@@ -8,27 +8,27 @@ trigger:
 - feature/*
 
 stages:
-# - stage: SAST
-#   pool:
-#     vmImage: 'ubuntu-latest'
-#   jobs:
-#   - job: WhitesourceMEND
-#     steps:
-#     - task: WhiteSource@21
-#       inputs:
-#         cwd: '$(System.DefaultWorkingDirectory)'
-#         projectName: 'PetClinic'
-#   - job: TrivyFS
-#     steps:
-#     - task: trivy@1
-#       inputs:
-#         version: 'latest'
-#         path: './'
-#       displayName: TrivyFS
+- stage: SAST
+  pool:
+    vmImage: 'ubuntu-latest'
+  jobs:
+  - job: WhitesourceMEND
+    steps:
+    - task: WhiteSource@21
+      inputs:
+        cwd: '$(System.DefaultWorkingDirectory)'
+        projectName: 'PetClinic'
+  - job: TrivyFS
+    steps:
+    - task: trivy@1
+      inputs:
+        version: 'latest'
+        path: './'
+      displayName: TrivyFS
 
 - stage: Build
-#  dependsOn: SAST
-#  condition: succeededOrFailed()
+  dependsOn: SAST
+  condition: succeededOrFailed()
   pool:
     vmImage: 'ubuntu-latest'
   jobs:
@@ -126,7 +126,7 @@ stages:
     - task: Docker@2
       inputs:
         containerRegistry: 'dockerhub'
-        repository: 'usernamedoc/docker-test'
+        repository: '$(REPOSITORY)'
         command: 'build'
         Dockerfile: '**/Dockerfile'
       displayName: Docker Build
@@ -195,7 +195,7 @@ stages:
       inputs:
         version: 'latest'
         loginDockerConfig: true
-        image: '$(DOCKERREPO):$(Build.BuildId)'
+        image: '$(REPOSITORY):$(Build.BuildId)'
   - job: OWASP
     dependsOn: TriveImageScan
     condition: succeededOrFailed()
@@ -205,13 +205,13 @@ stages:
         containerRegistry: 'dockerhub'
         command: 'login'
       displayName: 'Dockhub Login'
-    - bash: docker run -d -p 8080:8080 $(REPONAME)/$(IMAGENAME):$(Build.BuildId) 
+    - bash: docker run -d -p 8080:8080 $(REPOSITORY):$(Build.BuildId) 
       displayName: 'Running App Container'
     - bash: |
         chmod -R 777  ./
-        docker run --rm -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t https://www.netflix.com/in/ -x xml_report.xml
+        docker run --rm -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):8080 -x xml_report.xml
         true
-      displayName: 'Running ZAP Container'
+      displayName: 'ZAP Scanning'
     - powershell: |
         $XslPath = "/home/vsts/work/1/s/xml_to_nunit.xslt"
         $XmlInputPath = "xml_report.xml"
