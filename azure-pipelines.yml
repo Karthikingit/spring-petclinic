@@ -7,7 +7,7 @@ trigger:
   - main
   - feature/*
 
-  stages:
+stages:
 
   - stage: SAST
     pool:
