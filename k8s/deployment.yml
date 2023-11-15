@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: web-container
-        image: usernamedoc/petclinic:324
+        image: usernamedoc/petclinic:326
         ports:
         - containerPort: 8080  # Adjust the port if needed
 ---
