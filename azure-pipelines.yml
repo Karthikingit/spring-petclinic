@@ -212,7 +212,7 @@ stages:
         containerRegistry: 'dockerhub'
         command: 'login'
       displayName: 'Dockhub Login'
-    - bash: docker run -d -p 8080:8080 $(REPOSITORY):$(Build.BuildId) 
+    - bash: docker run -d -p 8080:8080 $(REPOSITORY):$(Build.BuildId)
       displayName: 'Running App Container'
     - bash: |
         chmod -R 777  ./
