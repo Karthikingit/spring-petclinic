@@ -12,7 +12,7 @@ stages:
   pool:
     vmImage: 'ubuntu-latest'
   jobs:
-  - job: WhitesourceMEND
+  - job: TrivyIS
     steps:
     - task: Bash@3
       inputs:
