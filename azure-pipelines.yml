@@ -14,6 +14,12 @@ stages:
   jobs:
   - job: TrivyIS
     steps:
+    - task: trivy@1
+      inputs:
+        version: 'latest'
+        loginDockerConfig: true
+        image: 'usernamedoc/petclinic:328'
+        severities: 'CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN'
     - task: Bash@3
       inputs:
         targetType: 'inline'
