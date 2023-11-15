@@ -126,15 +126,17 @@ stages:
     - task: Docker@2
       inputs:
         containerRegistry: 'dockerhub'
-        repository: '$(DOCKERREPO)'
+        repository: 'usernamedoc/docker-test'
         command: 'build'
         Dockerfile: '**/Dockerfile'
+      displayName: Docker Build
     - task: Docker@2
       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
       inputs:
         containerRegistry: 'dockerhub'
-        repository: '$(DOCKERREPO)'
+        repository: 'usernamedoc/docker-test'
         command: 'push'
+      displayName: Docker Push
 
 - stage: Test
   dependsOn: Build
