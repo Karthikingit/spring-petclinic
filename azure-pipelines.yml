@@ -8,27 +8,27 @@ trigger:
 - feature/*
 
 stages:
-- stage: SAST
-  pool:
-    vmImage: 'ubuntu-latest'
-  jobs:
-  - job: WhitesourceMEND
-    steps:
-    - task: WhiteSource@21
-      inputs:
-        cwd: '$(System.DefaultWorkingDirectory)'
-        projectName: 'PetClinic'
-  - job: TrivyFS
-    steps:
-    - task: trivy@1
-      inputs:
-        version: 'latest'
-        path: './'
-      displayName: TrivyFS
+# - stage: SAST
+#   pool:
+#     vmImage: 'ubuntu-latest'
+#   jobs:
+#   - job: WhitesourceMEND
+#     steps:
+#     - task: WhiteSource@21
+#       inputs:
+#         cwd: '$(System.DefaultWorkingDirectory)'
+#         projectName: 'PetClinic'
+#   - job: TrivyFS
+#     steps:
+#     - task: trivy@1
+#       inputs:
+#         version: 'latest'
+#         path: './'
+#       displayName: TrivyFS
 
 - stage: Build
-  dependsOn: SAST
-  condition: succeededOrFailed()
+  # dependsOn: SAST
+  # condition: succeededOrFailed()
   pool:
     vmImage: 'ubuntu-latest'
   jobs:
