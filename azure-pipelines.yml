@@ -246,7 +246,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          sed -i 's|image: usernamedoc/petclinic:.*|image: usernamedoc/petclinic:$(Build.BuildId)|' $(Build.SourcesDirectory)/k8s/deployment.yml
+          sed -i 's|image: $(REPOSITORY):.*|image: $(REPOSITORY):$(Build.BuildId)|' $(Build.SourcesDirectory)/k8s/deployment.yml
           git config --global user.email "karthikvenu1502@gmail.com"
           git config --global user.name "fromazdpipelines"
           git add $(Build.SourcesDirectory)/k8s/deployment.yml
