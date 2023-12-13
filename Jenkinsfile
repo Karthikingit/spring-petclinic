@@ -5,7 +5,7 @@ pipeline {
             agent {
                 dockerContainer {
                     image 'maven:3.9.3-eclipse-temurin-11'
-                    args '-v $PWD:/workspace'
+                    // args '-v $PWD:/workspace'
                 }
             }
             steps {
@@ -18,7 +18,7 @@ pipeline {
             agent {
                 dockerContainer {
                     image 'maven:3.9.3-eclipse-temurin-11'
-                    args '-v $PWD:/workspace -v $HOME/.m2:/root/.m2'
+                    // args '-v $PWD:/workspace -v $HOME/.m2:/root/.m2'
                 }
             }
             steps {
