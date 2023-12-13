@@ -29,4 +29,4 @@ spec:
     - protocol: TCP
       port: 80       # External port on the service
       targetPort: 8080 # Port on the pod
-  type: NodePort
+  type: NodePort #adjust service type if needed
