@@ -1,14 +1,9 @@
 pipeline {
     agent none
     stages {
-        stage ('Checkout') {
-            steps {
-                git branch: 'main', credentialsId: 'github', url: 'https://github.com/Karthikingit/spring-petclinic.git'
-            }
-        }
         stage ('SonarQube Analysis') {
             agent {
-                docker {
+                dockerContainer {
                     image 'maven:3.9.3-eclipse-temurin-11'
                     args '-v $PWD:/workspace'
                 }
@@ -21,7 +16,7 @@ pipeline {
         }
         stage ('Build') {
             agent {
-                docker {
+                dockerContainer {
                     image 'maven:3.9.3-eclipse-temurin-11'
                     args '-v $PWD:/workspace -v $HOME/.m2:/root/.m2'
                 }
